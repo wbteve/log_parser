@@ -11,15 +11,15 @@ my $lines=$slave->logs2->lines;
 
 #my $last=$master->analytics->proc->find()->next->{last};
 unless ($last){
-	$last=time()-180;
+	$last=time()-240;
 	$master->analytics->proc->insert({last=>$last});
 }
-if ($last<time()-160)
+if ($last<time()-180)
 {
-	$last=time()-150;
+	$last=time()-180;
 }
 while(1){
-	my $new_last=time()-150;
+	my $new_last=time()-170;
 	for (my $i=$last;$i<$new_last;$i=$i+1){
 		my %agg;
 		$agg{tstamp}=$i;
@@ -121,6 +121,10 @@ while(1){
 				@resp_player=(@resp_player,@$rrr);
 				if ($upstream =~ /86/){
 					@upstr_player=(@upstr_player,@$uuu);	
+					$agg{site_player_upstream}++;
+				}
+				if ($upstream =~ /11211/ and $upstream_code eq '200'){
+					$agg{site_player_memcache}++;
 				}
 				if (($cache_status eq 'HIT') or ($upstream =~ /11211/ and $upstream_code eq '200') ){
 					$agg{site_player_cache}+=$r->{total};
